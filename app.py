@@ -9,7 +9,7 @@ from firebase_admin import db
 # Replace with your Firebase project configuration
 cred = credentials.Certificate('healthKey.json')  # Download from Firebase console
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://healthassistant-568b7-default-rtdb.firebaseio.com/'
+    'databaseURL': 'https://healthai-99da4-default-rtdb.europe-west1.firebasedatabase.app/'
 })
 
 ref = db.reference('/')
