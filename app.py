@@ -4,7 +4,7 @@ from model import getResponds
 
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import db
+from firebase_admin import db, auth
 
 # Replace with your Firebase project configuration
 cred = credentials.Certificate('healthKey.json')  # Download from Firebase console
@@ -33,10 +33,10 @@ def send_message(chat_room_id, sender_id, message):
   """Sends a message to a specific chat room, creating it if it doesn't exist."""
   chat_ref = ref.child('chats').child(chat_room_id)
   # Check if chat room exists
-  if not chat_ref.get().exists():
+  if not chat_ref.get():
     chat_ref.set({})  # Create an empty chat room object
-  message_ref = chat_ref.child('messages').push()  # Push message
-  message_ref.set({
+    message_ref = chat_ref.child('messages').push()  # Push message
+    message_ref.set({
       'content': message,
       'sender': sender_id,
       'timestamp': datetime.now().timestamp()  # Server-side timestamp
