@@ -49,7 +49,7 @@ def get_messages(chat_room_id, listener):
   chat_ref = ref.child('chats').child(chat_room_id).child('messages')
   chat_ref.listen(listener)
   
-def on_message(snapshot, changes):
+def on_message(changes):
   """Listener function to handle new messages."""
   for change in changes:
     print(f"New message: {change.val()['content']}")
@@ -81,7 +81,7 @@ def index():
     # save user sent message 
     send_message(user, user, data) 
     
-    get_messages(user, on_message)
+    get_messages(user, on_message(response))
     # save bot sent message 
     send_message(user, 'bot', response)
     
@@ -93,4 +93,4 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(host='localhost',debug=True, port=3000)
+    app.run(host='localhost',debug=True, port=10000)
