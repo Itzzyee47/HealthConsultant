@@ -59,7 +59,7 @@ def get_messages(chat_room_id, listener):
 def on_message(changes):
   """Listener function to handle new messages."""
   for change in changes:
-    print(f"New message: {change.val()['content']}")
+    print(f"New message: {change}" )
     
     
 # Example usage
