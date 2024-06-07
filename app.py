@@ -32,22 +32,17 @@ def login_required(func):
 def send_message(chat_room_id, sender_id, message):
   """Sends a message to a specific chat room, creating it if it doesn't exist."""
   chat_ref = ref.child('chats').child(chat_room_id)
+  
   # Check if chat room exists
   if not chat_ref.get():
-    chat_ref.set({})  # Create an empty chat room object
-    message_ref = chat_ref.child('messages').push()  # Push message
-    message_ref.set({
-      'content': message,
-      'sender': sender_id,
-      'timestamp': datetime.now().timestamp()  # Server-side timestamp
-  })
-  else:
-    message_ref = chat_ref.child('messages').push()  # Push message
-    message_ref.set({
-      'content': message,
-      'sender': sender_id,
-      'timestamp': datetime.now().timestamp()  # Server-side timestamp
-  })
+    chat_ref.set({})  # Create an empty chat room object with uniuqe id
+    
+  message_ref = chat_ref.child('messages').push()  # Push message
+  message_ref.set({
+    'content': message,
+    'sender': sender_id,
+    'timestamp': datetime.now().timestamp()  # Server-side timestamp
+})
     # convert the timestamp to a datetime object in the local timezone
     # dt_object = datetime.fromtimestamp(timestamp)
     
@@ -58,8 +53,7 @@ def get_messages(chat_room_id, listener):
   
 def on_message(changes):
   """Listener function to handle new messages."""
-  for change in changes:
-    print(f"New message: {change}" )
+  print(f"New message: {changes}" )
     
     
 # Example usage
@@ -79,25 +73,25 @@ def on_message(changes):
 
 @app.route("/", methods=['POST'])
 def index():
-    # Get the user input from the request
-    data = request.form["message"]
-    user = request.form['user']
-    print(data)
-    # Send to the model and get it responds
-    response = getResponds(data)
-    # save user sent message 
-    send_message(user, user, data) 
-    
-    get_messages(user, on_message(response))
-    # save bot sent message 
-    send_message(user, 'bot', response)
-    
-    message = {"answer": response}
-    
-    return jsonify(message)
+  # Get the user input from the request
+  data = request.form["message"]
+  user = request.form['user']
+  print(data)
+  # Send to the model and get it responds
+  response = getResponds(data)
+  # save user sent message 
+  send_message(user, user, data) 
+  
+  get_messages(user, on_message(response))
+  # save bot sent message 
+  send_message(user, 'bot', response)
+  
+  message = {"answer": response}
+  
+  return jsonify(message)
 
 
 
 
 if __name__ == "__main__":
-    app.run(host='localhost',debug=True, port=10000)
+  app.run(host='localhost',debug=True, port=10000)
