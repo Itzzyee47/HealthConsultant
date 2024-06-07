@@ -41,6 +41,13 @@ def send_message(chat_room_id, sender_id, message):
       'sender': sender_id,
       'timestamp': datetime.now().timestamp()  # Server-side timestamp
   })
+  else:
+    message_ref = chat_ref.child('messages').push()  # Push message
+    message_ref.set({
+      'content': message,
+      'sender': sender_id,
+      'timestamp': datetime.now().timestamp()  # Server-side timestamp
+  })
     # convert the timestamp to a datetime object in the local timezone
     # dt_object = datetime.fromtimestamp(timestamp)
     
