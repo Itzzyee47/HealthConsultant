@@ -113,7 +113,7 @@ def getConvos():
     return f'An error occured: {e}', 500
   
 @app.route("/getMessagesOfChat", methods=['POST'])
-def getConvos():
+def getMessages():
   # Get the user input from the request
   convoID = request.form["convoID"]
   mess_ref = ref.child('messages')
