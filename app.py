@@ -33,8 +33,8 @@ def send_message(chat_room_id, sender_id, message, response):
   """Sends a message to a specific chat room, which must exist."""
   try:
     chat_ref = ref.child('messages')
-    chat_ref.set({})
-    message_ref = chat_ref.push()  # Push message
+
+    message_ref = chat_ref.push()  # Create empty message with unique id
     message_ref.set({
       'chat': chat_room_id,
       'question': message,
@@ -83,18 +83,18 @@ def create():
   chat_ref = ref.child('chats')
   # error handelling
   try: 
-    chat_ref.set({})  # Create an empty chat room object with uniuqe id
-    convoRef = chat_ref.push()  # Push creation data by who and when
+    # Create an empty chat room object with uniuqe id
+    convoRef = chat_ref.push()  
     convoRef.set({
       'sender': user,
       'time': datetime.now().timestamp()  # Server-side timestamp
     })
     
-    message = {"chatID": chat_ref}
+    message = {"chatID": convoRef.key}
     
     return jsonify(message)
   except Exception as e:
-    return 500
+    return e, 500
   
 @app.route("/getConversations", methods=['POST'])
 def getConvos():
@@ -104,11 +104,16 @@ def getConvos():
   # error handelling
   try: 
     # Get all coversations belonging to a specofic user....
-    convos = chat_ref.order_by_child('user').equal_to(user).get()  
-
-    message = {"convos": convos}
+    C = []
+    convos = chat_ref.get()
+    for c in convos:
+      k = chat_ref.child(c).get()
+      if k['sender'] == user:
+        C.append(c)
+      
+    message = {"convos": C}
     
-    return jsonify(message)
+    return jsonify(message),200
   except Exception as e:
     return f'An error occured: {e}', 500
   
@@ -120,9 +125,14 @@ def getMessages():
   # error handelling
   try: 
     # Get all messages belonging to a specific conversation
-    convos = mess_ref.order_by_child('chat').equal_to(convoID).get()  
-
-    message = {"messages": convos}
+    C = []
+    mess = mess_ref.get()
+    for c in mess:
+      k = mess_ref.child(c).get()
+      if k['chat'] == convoID:
+        C.append(k)
+      
+    message = {"allMessages": C}
     
     return jsonify(message)
   except Exception as e:
