@@ -166,17 +166,17 @@ def get_past_week_conversations():
     for key in chat_ref.get():
         k = chat_ref.child(key).get()
         if k['sender'] == user_email and start_timestamp <= k['time'] <= end_timestamp:
-          print(key)
+          #print(key)
           mess = mess_ref.get()
           
           for c in mess:
             message = mess_ref.child(c).get()
-            print(message['chat'])
+            #print(message['chat'])
             if message['chat'] == key:
               first_message = message['question']
-              print('true')
+              #print('true')
             #   print(m['question'])
-          print(first_message)
+          #print(first_message)
           
           if first_message:
               # Extract chat ID and first message content
@@ -201,6 +201,19 @@ def get_past_week_conversations():
     return f'An error occured: {e}'
 
 
+@app.route("/deleteConvo", methods=['DELETE'])
+def deletCoversation():
+  convoID = request.form['convoID']
+  chat_ref = ref.child('chats')
+  try:
+    chat_ref.child(convoID).delete()
+    
+    return f'Conversation deleted sucessfull!!'
+  except Exception as e:
+    return f'An error occured: {e}'
+  
+  
+  
 
 
 
