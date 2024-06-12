@@ -137,6 +137,71 @@ def getMessages():
     return jsonify(message)
   except Exception as e:
     return f'An error occured: {e}', 500
+  
+  
+@app.route("/getPastWeekConversations", methods=['POST'])
+def get_past_week_conversations():
+  user_email = request.form['user']
+
+  # Get a reference to the chats node
+  chat_ref = ref.child('chats')
+  mess_ref = ref.child('messages')
+
+  # Set the start and end timestamps for the past 7 days
+  now = datetime.now()
+  seven_days_ago = now - timedelta(days=7)
+  start_timestamp = seven_days_ago.timestamp()
+  end_timestamp = now.timestamp()
+
+  # Empty response dictionary
+  response = {
+      "title": "Past week",
+      "chats": []
+  }
+  
+  first_message = 'none'
+
+  try:
+    # Iterate through chats and filter based on user and timestamp
+    for key in chat_ref.get():
+        k = chat_ref.child(key).get()
+        if k['sender'] == user_email and start_timestamp <= k['time'] <= end_timestamp:
+          print(key)
+          mess = mess_ref.get()
+          
+          for c in mess:
+            message = mess_ref.child(c).get()
+            print(message['chat'])
+            if message['chat'] == key:
+              first_message = message['question']
+              print('true')
+            #   print(m['question'])
+          print(first_message)
+          
+          if first_message:
+              # Extract chat ID and first message content
+              chat_id = key
+              first_message_content = first_message
+
+              # Add chat details to the response
+              response["chats"].append({
+                  "chatID": chat_id,
+                  "fmessage": first_message_content
+              })
+          else:
+            response["chats"].append({
+                  "chatID": chat_id,
+                  "fmessage": []
+              })
+          
+    
+    return jsonify(response)        
+              
+  except Exception as e:
+    return f'An error occured: {e}'
+
+
+
 
 
 if __name__ == "__main__":
