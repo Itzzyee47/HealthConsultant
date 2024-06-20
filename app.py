@@ -149,7 +149,7 @@ def get_past_week_conversations():
 
   # Set the start and end timestamps for the past 7 days
   now = datetime.now()
-  seven_days_ago = now - timedelta(days=7)
+  seven_days_ago = now - timedelta(days=30)
   start_timestamp = seven_days_ago.timestamp()
   end_timestamp = now.timestamp()
 
@@ -211,11 +211,8 @@ def deletCoversation():
     return f'Conversation deleted sucessfull!!'
   except Exception as e:
     return f'An error occured: {e}'
-  
-  
-  
 
-
+# -NzsGvsw6ginSwkgYZRr  
 
 if __name__ == "__main__":
   app.run(host='localhost',debug=True, port=10000)
